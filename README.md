@@ -73,25 +73,40 @@ z, sigma = enc.encode(images)
 
 ---
 
-## Example: Split-CIFAR-10
+## Examples
 
-Incremental learning: 5 tasks, 2 classes each. Train ConvVAE once, add charges per task.
-
+Install with examples dependencies:
 ```bash
-pip install nwf-core nwf-vision
-python examples/split_cifar.py --epochs 5 --n-tasks 5
+pip install nwf-vision[examples]
 ```
 
-The example demonstrates adding new classes without retraining the encoder and without catastrophic forgetting.
+| Script | Description |
+|--------|-------------|
+| [split_cifar.py](examples/split_cifar.py) | Split-CIFAR-10: incremental learning, 5 tasks, no catastrophic forgetting |
+| [ood_cifar_svhn.py](examples/ood_cifar_svhn.py) | OOD detection: CIFAR-10 (in) vs SVHN (out), ROC, AUROC, example images |
+| [active_learning.py](examples/active_learning.py) | Active learning: uncertainty sampling vs random, accuracy vs n_labeled curve |
+
+Run:
+```bash
+python examples/split_cifar.py --epochs 5 --n-tasks 5 --save results/split_cifar.png
+python examples/ood_cifar_svhn.py --epochs 3 --save results/ood.png
+python examples/active_learning.py --n-initial 500 --save results/active.png
+```
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/romero19912017-ui/nwf-vision/blob/main/notebooks/split_cifar.ipynb) Split-CIFAR-10 notebook
+
+Legacy: `ood_detection.py` — simpler OOD demo without visualization.
 
 ---
 
-## Examples: OOD and Active Learning
+## Application areas (сферы применения)
 
-```bash
-python examples/ood_detection.py      # CIFAR-10 vs SVHN, AUROC
-python examples/active_learning.py    # Uncertainty vs random sampling
-```
+| Area | Use case | Example |
+|------|----------|---------|
+| **Continual learning** | Split-CIFAR: add classes incrementally | split_cifar.py |
+| **OOD detection** | CIFAR vs SVHN: detect anomalous images | ood_cifar_svhn.py |
+| **Active learning** | Select uncertain samples for labeling | active_learning.py |
+| **Image retrieval** | Find similar images by latent similarity | Field + ConvVAEEncoder |
 
 ---
 

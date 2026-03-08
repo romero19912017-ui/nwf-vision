@@ -29,7 +29,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["black", "isort", "flake8", "pytest"]
-all = ["nwf-vision[dev]"]
+examples = ["matplotlib>=3.5", "scikit-learn>=1.0"]
+all = ["nwf-vision[dev,examples]"]
 
 [project.urls]
 Homepage = "https://github.com/romero19912017-ui/nwf-vision"

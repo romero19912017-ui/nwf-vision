@@ -6,3 +6,5 @@ dist/
 *.egg-info/
 .eggs/
 examples/data/
+examples/results/
+data/

@@ -3,10 +3,14 @@
 
 Splits CIFAR-10 into 5 tasks (2 classes each). Trains ConvVAE on all data,
 then adds charges per task to Field. Evaluates accuracy after each task.
+Demonstrates: continual learning without catastrophic forgetting.
 """
 from __future__ import annotations
 
 import argparse
+import os
+import sys
+from pathlib import Path
 from typing import List, Tuple
 
 import numpy as np
@@ -15,6 +19,10 @@ from torchvision.transforms import ToTensor
 
 from nwf import Charge, Field
 from nwf.vision import ConvVAEEncoder
+
+if "--save" in sys.argv or os.environ.get("MPLBACKEND"):
+    import matplotlib
+    matplotlib.use("Agg")
 
 
 def get_cifar10(root: str = "./data") -> Tuple[np.ndarray, np.ndarray]:
@@ -65,10 +73,13 @@ def compute_class_charges(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Split-CIFAR-10 incremental learning")
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--latent-dim", type=int, default=64)
     parser.add_argument("--n-tasks", type=int, default=5)
+    parser.add_argument("--batch-size", type=int, default=128)
+    parser.add_argument("--k", type=int, default=5, help="k for k-NN")
+    parser.add_argument("--save", type=str, default="")
     args = parser.parse_args()
 
     tasks = split_tasks(n_tasks=args.n_tasks)
@@ -77,7 +88,7 @@ def main() -> None:
 
     print("Training ConvVAE on all data...")
     enc = ConvVAEEncoder(input_shape=(3, 32, 32), latent_dim=args.latent_dim)
-    enc.fit(X_full, epochs=args.epochs, batch_size=128)
+    enc.fit(X_full, epochs=args.epochs, batch_size=args.batch_size)
 
     field = Field()
     accuracies = []
@@ -87,9 +98,7 @@ def main() -> None:
         for i, c in enumerate(class_ids):
             ch = Charge(z=z_mean[i].astype(np.float64), sigma=sigma_mean[i].astype(np.float64))
             field.add(ch, labels=[int(c)], ids=[task_id * 10 + c])
-        dist, idx, labels = field.search(
-            Charge(z=z_mean[0], sigma=sigma_mean[0]), k=1
-        )
+
         n_correct = 0
         n_total = 0
         for t in range(task_id + 1):
@@ -100,8 +109,9 @@ def main() -> None:
                 s_te = s_te.reshape(1, -1)
             for i in range(len(z_te)):
                 q = Charge(z=z_te[i], sigma=s_te[i])
-                _, _, lab = field.search(q, k=1)
-                pred = lab[0][0]
+                _, _, lab = field.search(q, k=args.k)
+                votes = np.bincount(np.array(lab[0]).astype(int), minlength=10)
+                pred = int(np.argmax(votes))
                 if pred == y_te[i]:
                     n_correct += 1
                 n_total += 1
@@ -110,6 +120,18 @@ def main() -> None:
         print(f"After task {task_id + 1}: accuracy = {acc:.4f}")
 
     print(f"Final avg accuracy: {np.mean(accuracies):.4f}")
+
+    if args.save:
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.plot(range(1, len(accuracies) + 1), accuracies, "o-")
+        ax.set_xlabel("Task")
+        ax.set_ylabel("Accuracy")
+        ax.set_title("Split-CIFAR-10: accuracy after each task")
+        ax.set_xticks(range(1, len(accuracies) + 1))
+        Path(args.save).parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(args.save, dpi=150, bbox_inches="tight")
+        print(f"Plot saved to {args.save}")
 
 
 if __name__ == "__main__":
