@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nwf-vision"
-version = "0.1.1"
+version = "0.1.2"
 description = "NWF for computer vision: ConvVAE, ResNet encoders, Split-CIFAR incremental learning, continual learning on images."
 readme = "README.md"
 license = {text = "MIT"}
