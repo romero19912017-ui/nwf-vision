@@ -7,7 +7,7 @@
 
 ## NWF for Computer Vision
 
-`nwf-vision` provides encoders and examples for **incremental learning**, **OOD detection**, and **active learning** on images. Built on top of `nwf-core`, it uses its indices, metrics, and calibrators.
+`nwf-vision` provides encoders and examples for **incremental learning**, **OOD detection**, and **active learning** on images. Built on top of `nwf-core`, it uses its indices, metrics, and calibrators. Supports `Charge.alpha` (nwf-core 0.3+) for weighted superposition.
 
 ### Features
 
@@ -107,6 +107,7 @@ Legacy: `ood_detection.py` — simpler OOD demo without visualization.
 | **OOD detection** | CIFAR vs SVHN: detect anomalous images | ood_cifar_svhn.py |
 | **Active learning** | Select uncertain samples for labeling | active_learning.py |
 | **Image retrieval** | Find similar images by latent similarity | Field + ConvVAEEncoder |
+| **Weighted charges** | Charge.alpha for class imbalance (nwf-core 0.3+) | Charge(z, sigma, alpha=...) |
 
 ---
 

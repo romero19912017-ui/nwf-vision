@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "nwf-core>=0.2.3",
+    "nwf-core>=0.3.0",
     "numpy>=1.21",
     "torch>=1.10",
     "torchvision>=0.11",
