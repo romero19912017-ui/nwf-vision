@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nwf-vision"
+version = "0.1.1"
+description = "NWF for computer vision: ConvVAE, ResNet encoders, Split-CIFAR incremental learning, continual learning on images."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [{name = "Belousov Roman Sergeevich", email = "roma.belyy.5550955@mail.ru"}]
+keywords = ["nwf", "vision", "continual-learning", "vae", "cifar"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "nwf-core>=0.2.3",
+    "numpy>=1.21",
+    "torch>=1.10",
+    "torchvision>=0.11",
+]
+
+[project.optional-dependencies]
+dev = ["black", "isort", "flake8", "pytest"]
+all = ["nwf-vision[dev]"]
+
+[project.urls]
+Homepage = "https://github.com/romero19912017-ui/nwf-vision"
+Repository = "https://github.com/romero19912017-ui/nwf-vision"
+Documentation = "https://github.com/romero19912017-ui/nwf-vision"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["nwf.vision"]
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-v --tb=short"
