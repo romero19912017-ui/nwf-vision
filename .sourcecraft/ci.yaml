@@ -1,0 +1,24 @@
+# SourceCraft CI: сборка и публикация на PyPI
+# Добавьте секрет PYPI_API_TOKEN в настройках репозитория
+
+# Запуск: вручную (Code -> CI/CD -> Новый запуск) или при push тега v*
+on:
+  push:
+    - workflows: [publish-pypi]
+      filter:
+        tags: ["v*"]
+
+workflows:
+  publish-pypi:
+    tasks:
+      - name: build-and-publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        cubes:
+          - name: build
+            image: python:3.10-slim
+            script:
+              - pip install -q build twine
+              - python -m build
+              - python -m twine upload dist/* --skip-existing
